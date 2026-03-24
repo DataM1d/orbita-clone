@@ -22,6 +22,7 @@ export const useOrbita = () => {
         const currentRotation = disc.rotation.y;
         const prevRotation = prevRotationRef.current;
         const stateMagnets = useStore.getState().magnets;
+        const mutedTracks = useStore.getState().mutedTracks;
         const TWO_PI = Math.PI * 2;
 
         stateMagnets.forEach((m) => {
@@ -38,25 +39,30 @@ export const useOrbita = () => {
             const currentPos = (m.angle + currentRotation) % TWO_PI;
             const prevPos = (m.angle + prevRotation) % TWO_PI;
 
+            // Collision check with playhead (Angle 0)
             if (prevPos > currentPos) {
-                TriggerMagnetNote(m.note);
-                sphere.scale.set(1.6, 1.6, 1.6);
-                const armBase = scene.getObjectByName('arm-base');
-                if (armBase) {
-                    const ring = armBase.children.find(
-                        (child) => child.name === `sensor-ring-${m.trackIndex}`
-                    ) as THREE.Mesh;
+                // Only trigger audio and hardware glow if track is NOT muted
+                if (!mutedTracks[m.trackIndex]) {
+                    TriggerMagnetNote(m.note);
+                    
+                    sphere.scale.set(1.6, 1.6, 1.6);
+                    
+                    const armBase = scene.getObjectByName('arm-base');
+                    if (armBase) {
+                        const ring = armBase.children.find(
+                            (child) => child.name === `sensor-ring-${m.trackIndex}`
+                        ) as THREE.Mesh;
 
-                    if (ring && ring.material instanceof THREE.MeshStandardMaterial || ring?.material instanceof THREE.MeshLambertMaterial) {
-                    const ringMat = ring.material as THREE.MeshLambertMaterial;
-                        const originalColor = new THREE.Color(0x555555);
-                        
-                        ringMat.color.set(m.color); // Flash with magnet color
-                        
-                        // Reset ring color after 150ms
-                        setTimeout(() => {
-                            ringMat.color.copy(originalColor);
-                        }, 150);
+                        if (ring && (ring.material instanceof THREE.MeshStandardMaterial || ring.material instanceof THREE.MeshLambertMaterial)) {
+                            const ringMat = ring.material as THREE.MeshLambertMaterial;
+                            const originalColor = new THREE.Color(0x555555);
+                            
+                            ringMat.color.set(m.color); // Flash with magnet color
+                            
+                            setTimeout(() => {
+                                ringMat.color.copy(originalColor);
+                            }, 150);
+                        }
                     }
                 }
             } else {

@@ -1,12 +1,14 @@
 import * as Tone from 'tone';
 
 const synth = new Tone.PolySynth(Tone.Synth, {
-    oscillator: { type: "triangle" },
+    oscillator: { 
+        type: "triangle" 
+    },
     envelope: {
         attack: 0.0005,
-        decay: 0.1,
-        sustain: 0.3,
-        release: 1
+        decay: 0.3,
+        sustain: 0,
+        release: 0.8
     }
 }).toDestination();
 
@@ -17,5 +19,5 @@ export const initAudio = async () => {
 }
 
 export const TriggerMagnetNote = (note: string) => {
-    synth.triggerAttackRelease(note, "8n");
+    synth.triggerAttackRelease(note, "16n");
 };

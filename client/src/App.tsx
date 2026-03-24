@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Scene } from './engine/Scene';
 import { initAudio } from './engine/Audio';
+import { MuteControls } from './components/MuteControls';
 
 function App() {
   const [isStarted, setIsStarted] = useState(false);
@@ -26,7 +27,10 @@ function App() {
           </button>
         </div>
       ) : (
-        <Scene />
+        <>
+          <Scene />
+          <MuteControls />
+        </>
       )}
     </div>
   );

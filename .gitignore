@@ -1,0 +1,32 @@
+TODO.md
+
+# --- OS & IDE Files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# --- Frontend (Node/React) ---
+client/node_modules/
+client/dist/
+client/build/
+client/.env
+client/.env.local
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+
+# --- Backend (Go) ---
+server/bin/
+server/server
+server/*.exe
+server/*.test
+server/.env
+server/vendor/
+
+# --- Database & Misc ---
+*.db
+*.sqlite
+docker-volumes/
+.env

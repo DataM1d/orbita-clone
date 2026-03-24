@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { v4 as uuidv4 } from 'uuid';
 
 interface Magnet {
     id: string;
@@ -12,34 +11,42 @@ interface Magnet {
 
 interface OrbitaState {
     magnets: Magnet[];
-    bpm: number;
+    mutedTracks: boolean[];
     addMagnet: (angle: number, radius: number) => void;
+    toggleTrack: (index: number) => void;
     removeMagnet: (id: string) => void;
 }
 
 export const useStore = create<OrbitaState>((set) => ({
     magnets: [],
-    bpm: 120,
+    mutedTracks: [false, false, false, false],
 
     addMagnet: (angle, radius) => {
-     //Determining track index based on radius 
-    const trackIndex = Math.floor((radius / 5) * 4);
-    const notes = ["C4", "E4", "G4", "B4"]; // Simple Cmaj7 chord mapping
-    const colors = ["#ff4d4d", "#4da6ff", "#4d4dff", "#4dffff"];
+        const trackIndex = Math.min(Math.floor((radius - 0.5) / 1.1), 3);
+        if (trackIndex < 0) return;
 
-    const newMagnet: Magnet = {
-      id: uuidv4(),
-      angle,
-      radius,
-      trackIndex: Math.min(trackIndex, 3),
-      note: notes[Math.min(trackIndex, 3)],
-      color: colors[Math.min(trackIndex, 3)],
-    };
+        const notes = ["C4", "E4", "G4", "B4"]; // Simple Cmaj7 chord mapping
+        const colors = ["#ff4d4d", "#4da6ff", "#4d4dff", "#4dffff"];
 
-    set((state) => ({ magnets: [...state.magnets, newMagnet] }));
-  },
+        const newMagnet: Magnet = {
+            id: Math.random().toString(36).substring(7),
+            angle,
+            radius: (trackIndex + 1) * 1.1, // Snap to the center of the track
+            color: colors[trackIndex],
+            note: notes[trackIndex],
+            trackIndex,
+        };
 
-  removeMagnet: (id) => set((state) => ({
-    magnets: state.magnets.filter((m) => m.id !== id)
-  })),
+        set((state) => ({ magnets: [...state.magnets, newMagnet] }));
+    },
+
+    toggleTrack: (index) => set((state) => {
+        const newMuted = [...state.mutedTracks];
+        newMuted[index] = !newMuted[index];
+        return { mutedTracks: newMuted };
+    }),
+
+    removeMagnet: (id) => set((state) => ({
+        magnets: state.magnets.filter(m => m.id !== id)
+    })),
 }));

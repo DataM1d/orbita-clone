@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS projects (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS magnets (
+    id UUID PRIMARY KEY,
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    angle FLOAT NOT NULL,
+    radius FLOAT NOT NULL,
+    track_index INT NOT NULL,
+    note TEXT NOT NULL,
+    color TEXT NOT NULL
+);
